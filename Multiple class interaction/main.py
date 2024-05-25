@@ -28,7 +28,12 @@ def step_2b():
     plt.show()
     plt.close()
 
+def step_3a():
+    reader = Reader('dSST.csv')
+    print(reader.get_lines())  # Returns lines 2-6 as JSON
+    print(reader.get_lines())  # Returns lines 7-11 as JSON
+    print(reader.get_lines())
     
 if __name__ == "__main__":
-    step_2b()
+    step_3a()
 

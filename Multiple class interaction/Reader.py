@@ -1,5 +1,6 @@
 from CsvConverter import CsvConverter
 import linecache
+import time
 
 class Reader:
     
@@ -9,19 +10,35 @@ class Reader:
         self.current_line = 2
         self.header = linecache.getline(self.file_path, 1)
         self.converter = CsvConverter(self.header,"")
+        self.observers = set()
     
     def get_lines(self):
         lines = []
-        # Only get given number of lines
         for i in range(self.stride):
             line = linecache.getline(self.file_path, self.current_line)
-            # Return empty string if there are no more lines
             if not line:
                 return ""
 
-            # Convert to json
             self.converter.values = line
             lines.append(self.converter.csv_to_json())
             self.current_line += 1
-                
+            
+        self.notify_observers()
+        time.sleep(5) 
+          
         return lines
+
+            
+    def add_observer(self,observer):
+        self.observers.add(observer)
+    
+    def remove_observer(self):
+        if observer in self.observers:
+            self.observers.remove(observer)
+        
+    def notify_observers(self):
+        for observer in self.observers:
+            observer.update()
+            
+    
+                
