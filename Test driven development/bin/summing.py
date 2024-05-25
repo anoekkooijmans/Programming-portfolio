@@ -1,5 +1,5 @@
 def simple_sum(a,b):
-    pass
+    return a + b
 
 def multiple_sum(*args):
-    pass
+    return sum(args)
