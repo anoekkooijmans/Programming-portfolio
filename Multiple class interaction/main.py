@@ -1,6 +1,7 @@
 from CsvConverter import CsvConverter
 from Reader import Reader
 from AverageYear import AverageYear
+from AverageMonth import AverageMonth
 
 def step_1a():
     keys = 'a,b,c,d'
@@ -15,12 +16,19 @@ def step_1b():
     print(reader.get_lines())  # Returns lines 7-11 as JSON
     print(reader.get_lines())
     
-def step_2():
+def step_2a():
     average = AverageYear()
-    plt = average.calculate_average()
+    plt = average.create_plot()
     plt.show()
     plt.close()
     
+def step_2b():
+    average = AverageMonth()
+    plt = average.create_plot()
+    plt.show()
+    plt.close()
+
+    
 if __name__ == "__main__":
-    step_2()
+    step_2b()
 

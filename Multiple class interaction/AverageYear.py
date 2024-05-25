@@ -4,11 +4,11 @@ import json
 import pandas as pd
 import matplotlib.pyplot as plt
 
-
 class AverageYear:
         def __init__(self):
             self.reader = Reader()
             self.data = []
+            self.average_df = []            
             
         def calculate_average(self):
             
@@ -27,7 +27,12 @@ class AverageYear:
             df = df[temp_cols].apply(pd.to_numeric)
             df["Average"] = df.mean(axis=1)
                         
-            # Plot
+            return df
+        
+        def create_plot(self):
+            
+            df = self.calculate_average()
+
             plt.figure(figsize=(10, 6))
             plt.plot(df.index, df['Average'], color='b', linestyle='-')
             plt.xticks(rotation=90)
@@ -35,9 +40,5 @@ class AverageYear:
             plt.title('Average Temperature Anomaly Per Year')
             plt.xlabel('Year')
             plt.ylabel('Average Temperature Anomaly')
-            
-            
+
             return plt
-   
-        
-            
