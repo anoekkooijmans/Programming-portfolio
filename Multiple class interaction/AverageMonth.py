@@ -6,21 +6,22 @@ import matplotlib.pyplot as plt
 
 class AverageMonth:
         def __init__(self):
-            self.reader = Reader()
             self.data = []
+            
+        def update(self,data):
+            self.data.extend(data)
+            self.create_plot()
             
         def calculate_average(self):
             
-            while True:
-                lines = self.reader.get_lines()
-                if not lines:
-                    break
-                
-                for line in lines:
-                    data_dict = json.loads(line)
-                    self.data.append(data_dict)
+            lines = self.data
+            
+            dict_list = []    
+            for line in lines:
+                data_dict = json.loads(line)
+                dict_list.append(data_dict)
                     
-            df = pd.DataFrame(self.data)
+            df = pd.DataFrame(dict_list)
             temp_cols = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
             df.index = df['Year']
             df = df[temp_cols].apply(pd.to_numeric)
@@ -39,5 +40,8 @@ class AverageMonth:
             plt.title('Average Temperature Anomaly per Month')
             plt.xticks(rotation=45, ha='right')  # Rotate x-axis labels for better visibility
             plt.tight_layout()
+            
+            plt.show()
+            plt.close()
         
             return plt

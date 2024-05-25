@@ -13,6 +13,7 @@ class Reader:
         self.observers = set()
     
     def get_lines(self):
+        
         lines = []
         for i in range(self.stride):
             line = linecache.getline(self.file_path, self.current_line)
@@ -23,12 +24,11 @@ class Reader:
             lines.append(self.converter.csv_to_json())
             self.current_line += 1
             
-        self.notify_observers()
+        self.notify_observers(lines)
         time.sleep(5) 
-          
+
         return lines
 
-            
     def add_observer(self,observer):
         self.observers.add(observer)
     
@@ -36,9 +36,9 @@ class Reader:
         if observer in self.observers:
             self.observers.remove(observer)
         
-    def notify_observers(self):
+    def notify_observers(self,data):
         for observer in self.observers:
-            observer.update()
+            observer.update(data)
             
     
                 

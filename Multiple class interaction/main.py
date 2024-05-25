@@ -34,6 +34,14 @@ def step_3a():
     print(reader.get_lines())  # Returns lines 7-11 as JSON
     print(reader.get_lines())
     
+def step_3b():
+    prod = Reader('dSST.csv')
+    cons1 = AverageYear()
+    cons2 = AverageMonth()
+    prod.add_observer(cons1)
+    prod.add_observer(cons2)
+    print(prod.get_lines())
+    
 if __name__ == "__main__":
-    step_3a()
+    step_3b()
 
