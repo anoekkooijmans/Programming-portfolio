@@ -23,7 +23,7 @@ class Reader:
             self.converter.values = line
             lines.append(self.converter.csv_to_json())
             self.current_line += 1
-            
+                
         self.notify_observers(lines)
         time.sleep(5) 
 

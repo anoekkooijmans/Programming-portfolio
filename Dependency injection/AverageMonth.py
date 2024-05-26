@@ -23,7 +23,7 @@ class AverageMonth:
                     
             df = pd.DataFrame(dict_list)
             temp_cols = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-            #df.index = df['Year']
+            df.index = df['Year']
             df = df[temp_cols].apply(pd.to_numeric)
             average_per_month = df.mean()
                         

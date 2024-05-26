@@ -20,7 +20,7 @@ class AverageYear:
             for line in lines:
                 data_dict = json.loads(line)
                 dict_list.append(data_dict)
-                    
+                  
             df = pd.DataFrame(dict_list)
             temp_cols = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
             df.index = df['Year']
