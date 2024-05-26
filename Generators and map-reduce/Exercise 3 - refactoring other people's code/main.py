@@ -1,9 +1,13 @@
 from crawler import Crawler
 
-if __name__ == "__main__":
-    url = "https://sport050.nl"
+def main():
+    url = "https://sport050.nl/sporten-in-groningen"
     crawler = Crawler(url)
     crawler.crawl_site()
 
-    for x in range(5):
-        print(next(crawler))
+    limited_crawler = zip(range(5), crawler)
+    for _, data in limited_crawler:
+        print(data)
+
+if __name__ == "__main__":
+    main()

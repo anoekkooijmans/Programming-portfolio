@@ -1,69 +1,50 @@
-import urllib.request
+import urllib.request, urllib.parse, urllib.error
+from bs4 import BeautifulSoup
 import ssl
 import re
-from bs4 import BeautifulSoup
 
 class Crawler:
     def __init__(self, url):
         self.url = url
-        self.pointer = 0
-        self.sites = []
+        self.current_index = 0
+        self.sub_urls = []
 
     def hack_ssl(self):
-        """Ignore certificate errors"""
         ctx = ssl.create_default_context()
         ctx.check_hostname = False
         ctx.verify_mode = ssl.CERT_NONE
         return ctx
 
     def open_url(self, url):
-        """Reads url file as a big string and cleans the html file to make it more readable."""
         ctx = self.hack_ssl()
         html = urllib.request.urlopen(url, context=ctx).read()
-        return BeautifulSoup(html, 'html.parser')
+        soup = BeautifulSoup(html, 'html.parser')
+        return soup
 
     def read_hrefs(self, soup):
-        """Get a list of anchor tags, get the href keys and print them."""
-        reflist = []
-        tags = soup('a')
-        for tag in tags:
-            reflist.append(tag)
+        reflist = [tag for tag in soup('a')]
         return reflist
 
-    def fetch_sub_urls(self, soup):
-        """Fetch sub-urls from the main site."""
-        reflist = self.read_hrefs(soup)
-        sub_urls = [s for s in reflist if '<a href="/sportaanbieders' in str(s)][3:]
-        return sub_urls
-
-    def fetch_site_info(self, site):
-        """Fetch information from a sub-site."""
-        site_url = self.url[:-16] + self.extract(site)
-        soup = self.open_url(site_url)
-        info = self.fetch_sidebar(soup)
-        info = self.read_li(info)
-        phone = self.get_phone(info)
-        phone = self.remove_html_tags(phone).strip()
-        email = self.get_email(info)
-        email = self.remove_html_tags(email).replace("/", "")
-        return f'{site_url} ; {phone} ; {email}'
+    def read_li(self, soup):
+        lilist = [tag for tag in soup('li')]
+        return lilist
 
     def get_phone(self, info):
         reg = r"(?:(?:00|\+)?[0-9]{4})?(?:[ .-][0-9]{3}){1,5}"
-        phone = [s for s in filter(lambda x: 'Telefoon' in str(x), info)]
+        phone = [str(phone) for phone in filter(lambda x: 'Telefoon' in str(x), info)]
         try:
-            phone = str(phone[0])
+            phone = phone[0]
         except:
-            phone = [s for s in filter(lambda x: re.findall(reg, str(x)), info)]
+            phone = [str(phone) for phone in filter(lambda x: re.findall(reg, str(x)), info)]
             try:
-                phone = str(phone[0])
+                phone = phone[0]
             except:
-                phone = ""   
+                phone = ""
         return phone.replace('Facebook', '').replace('Telefoon:', '')
 
     def get_email(self, soup):
-        try: 
-            email = [s for s in filter(lambda x: '@' in str(x), soup)]
+        try:
+            email = [str(email) for email in filter(lambda x: '@' in str(x), soup)]
             email = str(email[0])[4:-5]
             bs = BeautifulSoup(email, features="html.parser")
             email = bs.find('a').attrs['href'].replace('mailto:', '')
@@ -72,14 +53,12 @@ class Crawler:
         return email
 
     def remove_html_tags(self, text):
-        """Remove html tags from a string"""
         clean = re.compile('<.*?>')
         return re.sub(clean, '', text)
 
     def fetch_sidebar(self, soup):
-        """Reads html file as a big string and cleans the html file to make it more readable."""
-        sidebar = soup.findAll(attrs={'class': 'sidebar'})
-        return sidebar[0]
+        sidebar = soup.find(attrs={'class': 'sidebar'})
+        return sidebar
 
     def extract(self, url):
         text = str(url)
@@ -87,17 +66,35 @@ class Crawler:
         return text
 
     def crawl_site(self):
-        sub_urls = self.fetch_sub_urls(self.open_url(self.url))
-        for sub_url in sub_urls:
-            self.sites.append(self.fetch_site_info(sub_url))
+        s = self.open_url(self.url)
+        reflist = self.read_hrefs(s)
+        self.sub_urls = [sub for sub in reflist if '<a href="/sportaanbieders' in str(sub)][3:]
+
+    def crawl_site(self):
+        s = self.open_url(self.url)
+        reflist = self.read_hrefs(s)
+        self.sub_urls = [sub for sub in reflist if '<a href="/sportaanbieders' in str(sub)][3:]
 
     def __iter__(self):
-        return self
+        return self._crawler_generator()
 
-    def __next__(self):
-        if self.pointer < len(self.sites):
-            result = self.sites[self.pointer]
-            self.pointer += 1
-            return result
-        else:
-            raise StopIteration
+    def _crawler_generator(self):
+        while self.current_index < len(self.sub_urls):
+            sub = self.sub_urls[self.current_index]
+            try:
+                sub = self.extract(sub)
+                site = self.url[:-16] + sub
+                soup = self.open_url(site)
+                info = self.fetch_sidebar(soup)
+                info = self.read_li(info)
+                phone = self.get_phone(info)
+                phone = self.remove_html_tags(phone).strip()
+                email = self.get_email(info)
+                email = self.remove_html_tags(email).replace("/", "")
+                result = f'{site} ; {phone} ; {email}'
+                self.current_index += 1
+                yield result
+            except Exception as e:
+                print(e)
+                self.current_index += 1
+                yield ""
