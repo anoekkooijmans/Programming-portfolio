@@ -6,6 +6,8 @@ from bs4 import BeautifulSoup
 class Crawler:
     def __init__(self, url):
         self.url = url
+        self.pointer = 0
+        self.sites = []
 
     def hack_ssl(self):
         """Ignore certificate errors"""
@@ -28,13 +30,23 @@ class Crawler:
             reflist.append(tag)
         return reflist
 
-    def read_li(self, soup):
-        """Get a list of li tags."""
-        lilist = []
-        tags = soup('li')
-        for tag in tags:
-            lilist.append(tag)
-        return lilist
+    def fetch_sub_urls(self, soup):
+        """Fetch sub-urls from the main site."""
+        reflist = self.read_hrefs(soup)
+        sub_urls = [s for s in reflist if '<a href="/sportaanbieders' in str(s)][3:]
+        return sub_urls
+
+    def fetch_site_info(self, site):
+        """Fetch information from a sub-site."""
+        site_url = self.url[:-16] + self.extract(site)
+        soup = self.open_url(site_url)
+        info = self.fetch_sidebar(soup)
+        info = self.read_li(info)
+        phone = self.get_phone(info)
+        phone = self.remove_html_tags(phone).strip()
+        email = self.get_email(info)
+        email = self.remove_html_tags(email).replace("/", "")
+        return f'{site_url} ; {phone} ; {email}'
 
     def get_phone(self, info):
         reg = r"(?:(?:00|\+)?[0-9]{4})?(?:[ .-][0-9]{3}){1,5}"
@@ -75,22 +87,17 @@ class Crawler:
         return text
 
     def crawl_site(self):
-        s = self.open_url(self.url)
-        reflist = self.read_hrefs(s)
-        sub_urls = [s for s in reflist if '<a href="/sportaanbieders' in str(s)][3:]
-        print(f'{len(sub_urls)} sub-urls')
-        for sub in sub_urls:
-            try:
-                sub = self.extract(sub)
-                site = self.url[:-16] + sub
-                soup = self.open_url(site)
-                info = self.fetch_sidebar(soup)
-                info = self.read_li(info)
-                phone = self.get_phone(info)
-                phone = self.remove_html_tags(phone).strip()
-                email = self.get_email(info)
-                email = self.remove_html_tags(email).replace("/", "")
-                print(f'{site} ; {phone} ; {email}')
-            except Exception as e:
-                print(e)
-                exit()
+        sub_urls = self.fetch_sub_urls(self.open_url(self.url))
+        for sub_url in sub_urls:
+            self.sites.append(self.fetch_site_info(sub_url))
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.pointer < len(self.sites):
+            result = self.sites[self.pointer]
+            self.pointer += 1
+            return result
+        else:
+            raise StopIteration

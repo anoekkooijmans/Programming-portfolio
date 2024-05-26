@@ -1,6 +1,9 @@
 from crawler import Crawler
 
 if __name__ == "__main__":
-    url = "https://sport050.nl/sportaanbieders/alle-aanbieders/"
+    url = "https://sport050.nl"
     crawler = Crawler(url)
     crawler.crawl_site()
+
+    for x in range(5):
+        print(next(crawler))
