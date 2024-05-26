@@ -14,7 +14,9 @@ class Reader:
     
     def get_lines(self):
         
-        lines = [self._get_line() for _ in range(self.stride) if self._get_line()]
+        lines = []
+        for i in range(self.stride):
+            line = linecache.getline(self.file_path, self.current_line)
             if not line:
                 return ""
 
