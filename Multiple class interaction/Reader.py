@@ -27,12 +27,18 @@ class Reader:
         self.notify_observers(lines)
         time.sleep(5) 
 
-        return lines
+        # return aan wie? het is juist onderdeel van het observer-pattern
+        # dat er niks geretourneerd hoeft te worden.
+        return lines 
+    
 
     def add_observer(self,observer):
         self.observers.add(observer)
     
     def remove_observer(self):
+        # dit werkt niet (vscode geeft er ook een compile-error op)
+        # die `observer` is niet gedefinieerd; klopt ook, want welke
+        # observer wil je dan uit die lijst halen?
         if observer in self.observers:
             self.observers.remove(observer)
         
