@@ -1,0 +1,7 @@
+{
+    "input_directory": "input",
+    "output_directory": "output",
+    "img_directory": "img",
+    "sensor_names": ["sensor_04", "sensor_51"],
+    "check_interval_seconds": 60
+}

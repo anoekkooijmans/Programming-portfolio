@@ -3,13 +3,8 @@ import matplotlib.pyplot as plt
 from DataTrainer import TrainModel
 
 class DataPlotter():
-    def __init__(self,data_path):
-        self.data_path = data_path
-        self.data_trainer = TrainModel(self.data_path)
-        self.data = self.data_trainer.trained_data
-        
-    def plot_sensor_anomolies(self,sensor):
-        df = self.data
+    """Plots and saves the sensor anomolies of the provided df and sensors"""
+    def plot_sensor_anomolies(self,df,sensor):
         anomoly_rows = df[df["Isolation Forest"] == -1]
         broken_rows = df[df['machine_status']=='BROKEN']
         recovery_rows = df[df['machine_status']=='RECOVERING']
