@@ -44,6 +44,7 @@ class PubMedArticleDownloader:
             logging.error(f'Error occurred while retrieving references for {pubmed_id}: {str(e)}')
             return []
 
+# Prima, fijn geabstraheerd en er een fijne klasse van gemaakt.
     def download_articles(self, pubmed_id, amount, mode='parallel'):
         """Download articles either in parallel or sequentially."""
         try:

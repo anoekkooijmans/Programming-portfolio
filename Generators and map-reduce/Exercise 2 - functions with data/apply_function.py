@@ -7,3 +7,5 @@ add_three = lambda x: x + 3
 
 result = apply_functions(data, multiply_by_two, add_three)
 print(result) 
+
+#Prima

@@ -18,7 +18,7 @@ class Molecule:
     
     def __add__(self, other):
         new_atoms = self.atoms + other.atoms
-        return Molecule(new_atoms)
+        return Molecule(new_atoms) # Goed dat je een nieuw molecuul retourneert.
     
     def molecular_formula(self):
         formula = ""

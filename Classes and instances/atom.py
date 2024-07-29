@@ -29,14 +29,16 @@ class Atom:
     def __eq__(self,other):
         if isinstance(other, Atom) and self.symbol == other.symbol:
             return self.mass_number() == other.mass_number()
+        # Waarom retourneer je hier `false`, terwijl je bij die andere
+        # (vergelijbare) methoden een TypeError gooit 🤔?
         return False
         
-    def __lt__(self,other):
+    def __lt__(self,other): # Hier doe je geen spatie tussen de parameters
         if isinstance(other, Atom) and self.symbol == other.symbol:
             return self.mass_number() < other.mass_number()
         raise TypeError("Cannot compare atoms of different elements")
     
-    def __le__(self, other):
+    def __le__(self, other): # Hier doe je wél een spatie tussen de parameters
         if isinstance(other, Atom) and self.symbol == other.symbol:
             return self.mass_number() <= other.mass_number()
         raise TypeError("Cannot compare atoms of different elements")
@@ -50,3 +52,5 @@ class Atom:
         if isinstance(other, Atom) and self.symbol == other.symbol:
             return self.mass_number() >= other.mass_number()
         raise TypeError("Cannot compare atoms of different elements")
+    
+    # Prima
